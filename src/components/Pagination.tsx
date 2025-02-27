@@ -5,7 +5,7 @@ export default function Pagination({ currentPage, totalPages }: any) {
     <div className="flex justify-between items-center">
       <Link
         className="border border-gray-300 px-4 py-2 rounded-md cursor-pointer"
-        href={`${currentPage - 1 === 1 ? "/" : `/page/${currentPage - 1}`}`}
+        href={`${currentPage - 1 === 1 ? "/blog" : `/blog/${currentPage - 1}`}`}
       >
         上一页
       </Link>
@@ -14,7 +14,7 @@ export default function Pagination({ currentPage, totalPages }: any) {
       </span>
       <Link
         className="border border-gray-300 px-4 py-2 rounded-md cursor-pointer"
-        href={`/page/${currentPage + 1}`}
+        href={`/blog/${currentPage + 1}`}
       >
         下一页
       </Link>
