@@ -36,8 +36,11 @@ const ArticleList = ({ articles, totalPages, currentPage }: Props) => {
                     <Link
                       href={`/article/${article.article_id}`}
                       className="hover:border-b-2 border-blue-400"
+                      dangerouslySetInnerHTML={{
+                        __html: article.article_info.title,
+                      }}
                     >
-                      {article.article_info.title}
+                      {/* {article.article_info.title} */}
                     </Link>
                   </h3>
                   <ul className="flex gap-2 my-3">
@@ -52,8 +55,16 @@ const ArticleList = ({ articles, totalPages, currentPage }: Props) => {
                       );
                     })}
                   </ul>
-                  <p className="text-zinc-500 text-sm mt-4 leading-7">
-                    {article.article_info.brief_content}
+                  <p
+                    className="text-zinc-500 text-sm mt-4 leading-7"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        article.article_info.content ||
+                        article.article_info.brief_content,
+                    }}
+                  >
+                    {/* {article.article_info.content ||
+                      article.article_info.brief_content} */}
                   </p>
                   <div className="float-right overflow-hidden mt-4 text-sm text-gray-500">
                     <span className="px-2 border-r border-gray-400">

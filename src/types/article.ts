@@ -9,6 +9,7 @@ export interface ArticleInfo {
   article_id: string;
   cover_image: string;
   title: string;
+  content: string;
   brief_content: string;
   mark_content: string;
   ctime: string;

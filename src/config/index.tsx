@@ -6,3 +6,6 @@ export const config = {
     "https://p3-passport.byteimg.com/img/user-avatar/585e1491713363bc8f67d06c485e8260~200x200.awebp",
   banner: "Xiaoma Blog",
 };
+
+export const UID = process.env.uid;
+console.log("UID: ", UID);
