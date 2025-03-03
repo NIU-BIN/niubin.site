@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
 import "@/styles/blog.css";
+import { div, ellipse, radialGradient } from "framer-motion/client";
 
 const requestMap = {
   search: "/api/search",
@@ -40,10 +41,17 @@ export default function Blog({
   };
 
   return (
+    // <div className="bg-[url(/image/bg.png)]">
+    //   <div
+    //     style={{
+    //       background:
+    //         "radial-gradient(rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 700%)",
+    //     }}
+    //   >
     <div className="max-w-5xl mx-auto">
       <div className="mt-12 mb-4">
-        <h2 className="text-4xl font-black italic font-serif">All Article</h2>
-        <p className="italic font-mono text-gray-500">
+        <h2 className="text-5xl font-black font-serif">All Article</h2>
+        <p className="mt-5 italic font-mono text-gray-500">
           Here are all the articles I have written. I hope you can find what you
           want.
         </p>
@@ -53,6 +61,7 @@ export default function Blog({
           <input
             type="text"
             className="w-full h-full border border-gray-400 rounded-md pl-4"
+            placeholder="Search article"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -83,6 +92,8 @@ export default function Blog({
         keyword={keyword}
       />
     </div>
+    //   </div>
+    // </div>
   );
 }
 

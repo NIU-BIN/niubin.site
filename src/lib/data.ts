@@ -18,7 +18,7 @@ export async function getArticleDetail(article_id: string) {
   const res = await axios.post(
     "https://api.juejin.cn/content_api/v1/article/detail",
     {
-      article_id,
+      article_id: article_id + "",
       client_type: 2608,
     }
   );

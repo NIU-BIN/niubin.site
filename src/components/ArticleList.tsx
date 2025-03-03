@@ -1,9 +1,9 @@
-import { Article } from "@/types/article";
+import { ArticleType } from "@/types/article";
 import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
-  articles: Article[];
+  articles: ArticleType[];
   currentPage: number;
   totalPages: number;
 };
@@ -31,17 +31,15 @@ const ArticleList = ({ articles, totalPages, currentPage }: Props) => {
                     className="absolute -top-3 -left-3 rounded-md object-fill w-full h-full object-fit"
                   />
                 </div>
-                <div className=" flex-1">
-                  <h3 className="text-xl font-bold text-gray-700  hover:text-blue-400  transition-colors duration-300">
+                <div className="flex-1">
+                  <h3 className="text-xl inline-block font-bold text-gray-700 relative group">
                     <Link
                       href={`/article/${article.article_id}`}
-                      className="hover:border-b-2 border-blue-400"
                       dangerouslySetInnerHTML={{
                         __html: article.article_info.title,
                       }}
-                    >
-                      {/* {article.article_info.title} */}
-                    </Link>
+                    ></Link>
+                    <div className="absolute left-0 bottom-0 h-4 w-0 bg-indigo-200 group-hover:w-full -z-[1] transition-all duration-200 ease-in-out"></div>
                   </h3>
                   <ul className="flex gap-2 my-3">
                     {article.tags.map((tag) => {

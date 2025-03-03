@@ -1,4 +1,4 @@
-export interface Article {
+export interface ArticleType {
   article_id: string;
   article_info: ArticleInfo;
   category: Category;
