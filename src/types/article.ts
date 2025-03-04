@@ -19,6 +19,7 @@ export interface ArticleInfo {
   collect_count: number;
   digg_count: number;
   comment_count: number;
+  read_time: string;
 }
 
 export interface Category {

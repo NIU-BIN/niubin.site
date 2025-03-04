@@ -5,6 +5,8 @@ import { MENU_LIST } from "@/lib";
 import Link from "next/link";
 import Footer from "./Footer";
 import { useEffect, useState } from "react";
+import "prismjs/themes/prism-okaidia.css";
+// prism-coy prism-okaidia prism-tomorrow
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
