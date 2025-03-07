@@ -34,7 +34,12 @@ export default function Home({
             View all article →
           </Link>
         </div>
-        <ArticleList totalPages={count} currentPage={page} articles={data} />
+        <ArticleList
+          totalPages={count}
+          currentPage={page}
+          articles={data}
+          isHome={true}
+        />
       </section>
     </>
   );

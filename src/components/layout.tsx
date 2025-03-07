@@ -6,6 +6,7 @@ import Link from "next/link";
 import Footer from "./Footer";
 import { useEffect, useState } from "react";
 import "prismjs/themes/prism-okaidia.css";
+import { useRouter } from "next/router";
 // prism-coy prism-okaidia prism-tomorrow
 
 const geistSans = Geist({
@@ -23,7 +24,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   const [isTop, setIsTop] = useState(true);
+  const [activeMenu, setActiveMenu] = useState(router.asPath);
+
+  useEffect(() => {
+    setActiveMenu(router.asPath);
+  }, [router.asPath]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +45,10 @@ export default function RootLayout({
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const isCurrentMenu = (path: string) => {
+    return activeMenu.split("/")[1] === path.split("/")[1];
+  };
 
   return (
     <>
@@ -63,7 +74,11 @@ export default function RootLayout({
             return (
               <Link href={item.path} key={item.path} className="relative group">
                 {item.name}
-                <div className="absolute bottom-0 left-0 w-0 h-4 bg-indigo-200 group-hover:w-full transition-all duration-200 ease-in-out -z-[1]"></div>
+                <div
+                  className={`absolute bottom-0 left-0 w-0 h-4 bg-indigo-200 group-hover:w-full transition-all duration-200 ease-in-out -z-[1] ${
+                    isCurrentMenu(item.path) ? "w-full" : ""
+                  }`}
+                ></div>
               </Link>
             );
           })}

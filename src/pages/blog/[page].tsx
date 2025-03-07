@@ -1,17 +1,18 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getArticles } from "@/lib/data";
+import { getArticles, getTargetArticles } from "@/lib/data";
 import ArticleList from "@/components/ArticleList";
 import Pagination from "@/components/Pagination";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "@/styles/blog.css";
-import { div, ellipse, radialGradient } from "framer-motion/client";
 
 const requestMap = {
   search: "/api/search",
   all: "/api/article",
 };
+
+const uid = "545789884249437";
 
 export default function Blog({
   data,
@@ -23,31 +24,66 @@ export default function Blog({
     data,
     count,
     page,
+    cursor: "0",
   });
+  const [complete, setComplete] = useState(false);
+  const [date, setDate] = useState<null | number>(null);
+  const [isSearch, setIsSearch] = useState(false);
+  const theEndRef = useRef(null);
 
-  const handleSearch = async () => {
-    const requestURL = keyword ? requestMap["search"] : requestMap["all"];
-    const params: any = {
-      uid: "545789884249437",
+  useEffect(() => {
+    let observer: IntersectionObserver;
+    if (theEndRef.current) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setDate(new Date().getTime());
+          }
+        });
+      });
+      observer.observe(theEndRef.current!);
+    }
+    return () => {
+      observer && observer.disconnect();
     };
-    keyword ? (params["keyword"] = keyword) : (params["cursor"] = "0");
+  }, [theEndRef]);
+
+  useEffect(() => {
+    console.log("!!!!!!!!res: ", res, data);
+  }, [data]);
+
+  useEffect(() => {
+    if (date) {
+      !complete && handleSearch(res.cursor);
+    }
+  }, [date]);
+
+  const handleSearch = async (cursor?: string) => {
+    const requestURL = keyword ? requestMap["search"] : requestMap["all"];
+    setIsSearch(!!keyword);
+    const params: any = {
+      uid,
+    };
+    if (keyword || cursor) {
+      params.keyword = keyword;
+      params.cursor = cursor || "0";
+      params.limit = 5;
+    } else {
+      params.cursor = "0";
+    }
     const result = await axios.post(requestURL, params);
     setRes({
-      data: result.data.data,
+      ...res,
+      data: cursor ? [...res.data, ...result.data.data] : result.data.data,
       count: result.data.count,
       page: 1,
+      cursor: result.data.cursor,
     });
-    console.log("result: ", result);
+    setComplete(!result.data.has_more);
+    console.log("result: ", result.data);
   };
 
   return (
-    // <div className="bg-[url(/image/bg.png)]">
-    //   <div
-    //     style={{
-    //       background:
-    //         "radial-gradient(rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 700%)",
-    //     }}
-    //   >
     <div className="max-w-5xl mx-auto">
       <div className="mt-12 mb-4">
         <h2 className="text-5xl font-black font-serif">All Article</h2>
@@ -68,7 +104,7 @@ export default function Blog({
           />
           <button
             className="absolute right-0 top-0 h-full w-10 flex justify-center items-center"
-            onClick={handleSearch}
+            onClick={() => handleSearch()}
           >
             <Image
               src="/icon/search.svg"
@@ -85,23 +121,38 @@ export default function Blog({
         totalPages={res.count}
         currentPage={res.page}
         articles={res.data}
+        isHome={false}
       />
+      {isSearch && (
+        <div ref={theEndRef} className="my-8 text-center">
+          {complete ? (
+            <p className="text-center text-gray-500">已经到底啦</p>
+          ) : (
+            <div>loading...</div>
+          )}
+        </div>
+      )}
       <Pagination
         currentPage={res.page}
         totalPages={Math.ceil(res.count / 10)}
         keyword={keyword}
       />
     </div>
-    //   </div>
-    // </div>
   );
 }
 
 // 每次刷新页面查询文章列表（首页只显示最近5条）
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  console.log("context: ", context.query);
-  const page = (context.query?.page as string) || 1;
+  console.log("初始化context!!!!!: ", context.query);
+  /* 
+    文章列表查询的 cursor 为 0 代表第一页，为 10 代表第二页
+    但是搜索的时候 cursor 为 0 代表第一页，但是传递10 20 30永远不会结束，
+    他查询搜索的第二页的时候需要传递第一页返回的cursor作为入参，第三页的时候需要传递第二页返回的cursor作为入参
+    所以该接口无法得知你查询的总条数有多少
+  */
   const uid = process.env.uid!;
-  const { data, count } = await getArticles(uid, (+page - 1) * 10);
-  return { props: { data: data, count, page: +page } };
+  const { page } = context.query;
+  const { data, count } = await getArticles(uid, (Number(page) - 1) * 10);
+  console.log("data: ", data[0].a);
+  return { props: { data: data, count, page: +page! } };
 }

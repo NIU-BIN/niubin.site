@@ -6,9 +6,15 @@ type Props = {
   articles: ArticleType[];
   currentPage: number;
   totalPages: number;
+  isHome?: boolean;
 };
 
-const ArticleList = ({ articles, totalPages, currentPage }: Props) => {
+const ArticleList = ({
+  articles,
+  totalPages,
+  currentPage,
+  isHome = true,
+}: Props) => {
   return (
     <div className="px-3 md:px-0 max-w-5xl mx-auto">
       <ul className="flex flex-col gap-16">
@@ -16,7 +22,10 @@ const ArticleList = ({ articles, totalPages, currentPage }: Props) => {
           articles.length &&
           articles.map((article) => {
             return (
-              <li key={article.article_id} className="flex gap-8">
+              <li
+                key={article.article_id}
+                className={`flex gap-8 ${!isHome && "even:flex-row-reverse"}`}
+              >
                 {/* <Image
                 src={article.article_info.cover_image}
                 alt={article.article_info.title}

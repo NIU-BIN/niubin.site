@@ -1,6 +1,16 @@
 import Link from "next/link";
 
-export default function Pagination({ currentPage, totalPages, keyword }: any) {
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  keyword: string;
+}
+
+export default function Pagination({
+  currentPage,
+  totalPages,
+  keyword,
+}: PaginationProps) {
   return (
     <div className="mt-16 flex gap-12 justify-center items-center">
       <Link
@@ -9,19 +19,20 @@ export default function Pagination({ currentPage, totalPages, keyword }: any) {
           pathname: `${
             currentPage - 1 === 1 ? "/blog" : `/blog/${currentPage - 1}`
           }`,
-          query: { keyword },
         }}
       >
         上一页
       </Link>
-      <span className="w-20 text-center">
-        {currentPage}/{totalPages}
-      </span>
+      {!keyword && (
+        <span className="w-20 text-center">
+          {currentPage}/{totalPages}
+        </span>
+      )}
+
       <Link
         className="border border-gray-300 px-4 py-2 rounded-md cursor-pointer hover:bg-gray-100"
         href={{
           pathname: `/blog/${currentPage + 1}`,
-          query: { keyword },
         }}
       >
         下一页
