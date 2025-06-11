@@ -50,6 +50,12 @@ export default function Blog({
 
   useEffect(() => {
     console.log("!!!!!!!!res: ", res, data);
+    setRes({
+      data,
+      count,
+      page,
+      cursor: "0",
+    });
   }, [data]);
 
   useEffect(() => {
@@ -72,6 +78,7 @@ export default function Blog({
       params.cursor = "0";
     }
     const result = await axios.post(requestURL, params);
+    console.log("result: ", result);
     setRes({
       ...res,
       data: cursor ? [...res.data, ...result.data.data] : result.data.data,
@@ -79,7 +86,7 @@ export default function Blog({
       page: 1,
       cursor: result.data.cursor,
     });
-    setComplete(!result.data.has_more);
+    keyword && setComplete(!result.data.has_more);
     console.log("result: ", result.data);
   };
 
@@ -117,6 +124,7 @@ export default function Blog({
           </button>
         </div>
       </div>
+      {/* {JSON.stringify(res.data)} */}
       <ArticleList
         totalPages={res.count}
         currentPage={res.page}
@@ -143,7 +151,7 @@ export default function Blog({
 
 // 每次刷新页面查询文章列表（首页只显示最近5条）
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  console.log("初始化context!!!!!: ", context.query);
+  console.log("??????初始化context!!!!!: ", context.query.slug);
   /* 
     文章列表查询的 cursor 为 0 代表第一页，为 10 代表第二页
     但是搜索的时候 cursor 为 0 代表第一页，但是传递10 20 30永远不会结束，
@@ -151,8 +159,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     所以该接口无法得知你查询的总条数有多少
   */
   const uid = process.env.uid!;
-  const { page } = context.query;
-  const { data, count } = await getArticles(uid, (Number(page) - 1) * 10);
-  console.log("data: ", data[0].a);
-  return { props: { data: data, count, page: +page! } };
+  const slug = context.query.slug;
+  if (slug && slug.length === 1) {
+    const { data, count } = await getArticles(uid, (Number(slug[0]) - 1) * 10);
+    console.log("data: ", data[0]?.article_info);
+    console.log(
+      `----------------------------------------------------${slug[0]} end`
+    );
+    return { props: { data: data, count, page: +slug[0]! } };
+  } else if (slug && slug.length === 2) {
+    const keyword = slug[1];
+    console.log("keyword^^^^^^: ", keyword);
+    const { data, count } = await getTargetArticles(uid, keyword, "0", 5);
+    return { props: { data, count, page: 1 } };
+  } else {
+    return { props: { data: [], count: 0, page: 1 } };
+  }
 }
