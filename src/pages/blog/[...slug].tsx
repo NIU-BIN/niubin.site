@@ -18,8 +18,9 @@ export default function Blog({
   data,
   count,
   page,
+  words = "",
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState(words);
   const [res, setRes] = useState({
     data,
     count,
@@ -86,6 +87,7 @@ export default function Blog({
       page: 1,
       cursor: result.data.cursor,
     });
+    console.log(result.data.has_more, !!keyword);
     keyword && setComplete(!result.data.has_more);
     console.log("result: ", result.data);
   };
@@ -136,13 +138,15 @@ export default function Blog({
           {complete ? (
             <p className="text-center text-gray-500">已经到底啦</p>
           ) : (
-            <div>loading...</div>
+            // <div>loading...</div>
+            <></>
           )}
         </div>
       )}
       <Pagination
         currentPage={res.page}
         totalPages={Math.ceil(res.count / 10)}
+        isSearch={isSearch}
         keyword={keyword}
       />
     </div>
@@ -162,16 +166,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const slug = context.query.slug;
   if (slug && slug.length === 1) {
     const { data, count } = await getArticles(uid, (Number(slug[0]) - 1) * 10);
-    console.log("data: ", data[0]?.article_info);
     console.log(
       `----------------------------------------------------${slug[0]} end`
     );
     return { props: { data: data, count, page: +slug[0]! } };
   } else if (slug && slug.length === 2) {
     const keyword = slug[1];
-    console.log("keyword^^^^^^: ", keyword);
-    const { data, count } = await getTargetArticles(uid, keyword, "0", 5);
-    return { props: { data, count, page: 1 } };
+    const { data, count } = await getTargetArticles(
+      uid,
+      "0",
+      keyword,
+      5 * Number(slug[0]) - 1
+    );
+    return { props: { data, count, page: 1, words: keyword } };
   } else {
     return { props: { data: [], count: 0, page: 1 } };
   }
