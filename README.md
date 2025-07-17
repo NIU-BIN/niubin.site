@@ -1,4 +1,4 @@
-# Calf Poster
+# niubin.site
 
 <img style="margin: 20px 0" src="https://github.com/NIU-BIN/niubin.site/blob/main/cover.png"/>
 
